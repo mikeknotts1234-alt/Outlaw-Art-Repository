@@ -1,263 +1,439 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#121212">
-  <meta name="description" content="Track your 1,000 burpees during the December 2026 Burpee-Mas challenge.">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>31 Days of Burpee-Mas</title>
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./icon-192.png" type="image/png">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap');
-    :root{--bg-color:#121212;--card-bg:#1e1e1e;--red:#d32f2f;--red-dim:rgba(211,47,47,.15);--green:#2e7d32;--text-main:#f5f5f5;--text-muted:#9e9e9e;--border-color:#333}
-    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{font-family:Roboto,sans-serif;background:var(--bg-color);color:var(--text-main);padding:10px;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
-    .container{max-width:480px;margin:0 auto}
-    .header{display:flex;justify-content:space-between;align-items:center;padding:10px 5px 20px;border-bottom:1px solid var(--border-color);margin-bottom:20px}
-    .header-title{font-family:Oswald,sans-serif;font-size:16px;letter-spacing:1px;text-transform:uppercase}
-    .header-status{font-size:12px;color:var(--text-muted);text-align:right}
-    .hero{background:linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.3)),url('https://images.unsplash.com/photo-1598971639058-fab3c3109a00?q=80&w=1000&auto=format&fit=crop') center/cover;border-radius:8px;padding:30px 20px;margin-bottom:20px;border:1px solid var(--border-color);position:relative;overflow:hidden}
-    .hero:before{content:'';position:absolute;inset:0;background:radial-gradient(circle,transparent 20%,#121212 120%)}
-    .hero-content{position:relative;z-index:1}
-    .hero-kicker{font-size:10px;color:#ff5252;letter-spacing:1px;margin-bottom:5px}
-    .hero h1{font-family:Oswald,sans-serif;font-size:38px;font-style:italic;color:var(--red);line-height:1.1;margin-bottom:10px;text-transform:uppercase;text-shadow:2px 2px 4px #000}
-    .hero p{font-size:14px;color:#ddd;max-width:85%;line-height:1.45}
-    .card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:8px;padding:20px;margin-bottom:15px}
-    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;gap:10px}
-    .card-title{font-family:Oswald,sans-serif;font-size:20px;text-transform:uppercase;letter-spacing:.5px}
-    .day-pill,.small-btn{font-size:12px;border:1px solid var(--border-color);padding:6px 9px;border-radius:4px;color:var(--text-main);background:#171717}
-    .stats-row{display:flex;justify-content:space-between;margin-bottom:15px}
-    .stat-group{display:flex;flex-direction:column}
-    .stat-label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
-    .stat-value{font-family:Oswald,sans-serif;font-size:42px;line-height:1}
-    .text-green{color:var(--green)}.text-red{color:var(--red)}
-    .progress-header{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase}
-    .progress-track{height:12px;background:#000;border-radius:2px;width:100%;overflow:hidden;border:1px solid #333}
-    .progress-fill{height:100%;background:repeating-linear-gradient(-45deg,var(--red),var(--red) 10px,#b71c1c 10px,#b71c1c 20px);width:0%;transition:width .4s}
-    .pace-needed-flex{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);padding-bottom:15px;margin-bottom:10px;gap:8px}
-    .pace-huge{font-family:Oswald,sans-serif;font-size:32px;color:var(--red)}
-    .pace-sub{font-size:13px;color:var(--text-muted);line-height:1.5}
-    .reps-input-group{background:#121212;border:1px solid var(--border-color);border-radius:6px;display:flex;justify-content:space-between;align-items:center;padding:10px;margin-bottom:15px}
-    .rep-btn{background:none;border:0;color:var(--text-main);font-size:24px;width:40px;height:40px;font-family:Oswald,sans-serif}
-    .rep-display{font-family:Oswald,sans-serif;font-size:36px}
-    .quick-reps{display:flex;gap:10px;margin-bottom:20px;align-items:center}
-    .quick-label{font-size:12px;color:var(--text-muted)}
-    .quick-chip{background:#121212;border:1px solid var(--border-color);color:var(--text-muted);padding:8px 0;flex:1;text-align:center;border-radius:4px;font-weight:bold}
-    .quick-chip.active{border-color:var(--red);color:var(--red);background:var(--red-dim)}
-    button{cursor:pointer}
-    button:disabled{opacity:.4;cursor:not-allowed}
-    .log-btn{background:var(--red);color:white;font-family:Oswald,sans-serif;font-size:20px;border:0;width:100%;padding:15px;border-radius:6px;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:center;align-items:center;gap:10px}
-    .log-btn:active{background:#b71c1c}
-    .log-count{text-align:center;font-size:13px;color:var(--text-muted);margin-top:15px}
-    .notice{background:#241818;border:1px solid #633030;color:#ffdada;border-radius:6px;padding:11px 12px;font-size:13px;line-height:1.45;margin-bottom:15px}
-    .pace-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .pace-col{border-right:1px solid var(--border-color)}
-    .pace-col:last-child{border:0;padding-left:20px}
-    .pace-value{font-family:Oswald,sans-serif;font-size:30px;margin:5px 0}
-    .pace-unit{font-size:12px;color:var(--text-muted);font-family:Roboto,sans-serif;font-weight:normal}
-    .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;margin-top:15px}
-    .day-col{background:#121212;border:1px solid var(--border-color);border-radius:4px;padding:10px 0;display:flex;flex-direction:column;position:relative;min-width:0}
-    .day-name{font-size:10px;color:var(--text-muted)}
-    .day-date{font-size:12px;color:var(--text-muted);margin:3px 0 8px}
-    .day-reps{font-family:Oswald,sans-serif;font-size:16px;overflow-wrap:anywhere}
-    .day-col.active:after{content:'';position:absolute;bottom:-1px;left:10%;width:80%;height:3px;background:var(--red);border-radius:2px}
-    .footer{text-align:center;font-size:12px;color:var(--text-muted);margin-top:20px;text-transform:uppercase;letter-spacing:1px;line-height:1.6}
-    .footer button{margin-top:12px}
-    @media(max-width:360px){.hero h1{font-size:32px}.card{padding:15px}.pace-huge{font-size:27px}.quick-reps{gap:6px}.quick-label{font-size:10px}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Art Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Tailwind slate-900 */
+        }
+        .canvas-container {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            object-fit: contain;
+            background-color: #1e293b;
+        }
+        /* Custom scrollbar for a sleeker look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-bottom-color: #3b82f6; /* blue-500 */
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
-<div class="container">
-  <header class="header">
-    <div class="header-title">🎄 31 Days of Burpee-Mas</div>
-    <div class="header-status" id="app-status">DECEMBER 2026<br>OFFLINE-READY</div>
-  </header>
+<body class="text-slate-100 min-h-screen pb-12">
 
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-kicker">★ DECEMBER BURPEE CHALLENGE</div>
-      <h1>31 DAYS OF<br>BURPEE-MAS</h1>
-      <p>1,000 burpees. 31 days. No excuses. Sleigh the challenge!</p>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <header class="mb-10 text-center md:text-left border-b border-slate-800 pb-6">
+            <h1 class="text-4xl font-extrabold tracking-tight text-white flex items-center justify-center md:justify-start gap-3">
+                <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+                Studio Art Creator
+            </h1>
+            <p class="mt-2 text-slate-400">Design high-quality, custom album covers for your tracks.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <!-- Left Column: Controls -->
+            <div class="lg:col-span-5 space-y-8">
+                
+                <!-- Text Details -->
+                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Track Details
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="bandName" class="block text-sm font-medium text-slate-300 mb-1">Artist / Band Name</label>
+                            <input type="text" id="bandName" value="THE RUSTY STRINGS" placeholder="Enter artist name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label for="songName" class="block text-sm font-medium text-slate-300 mb-1">Song Title</label>
+                            <input type="text" id="songName" value="Midnight Highway" placeholder="Enter song title" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Sources -->
+                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Cover Art Image
+                    </h2>
+                    
+                    <!-- Tabs -->
+                    <div class="flex border-b border-slate-700 mb-5">
+                        <button id="tabUpload" class="flex-1 py-2 text-sm font-medium text-blue-400 border-b-2 border-blue-500 transition-colors">Upload Photo</button>
+                        <button id="tabAI" class="flex-1 py-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-colors">AI Generator</button>
+                    </div>
+
+                    <!-- Upload Section -->
+                    <div id="sectionUpload" class="space-y-4 block">
+                        <label class="block w-full cursor-pointer group">
+                            <div class="border-2 border-dashed border-slate-600 rounded-xl p-8 text-center bg-slate-900 group-hover:border-blue-500 group-hover:bg-slate-800 transition-all">
+                                <svg class="w-10 h-10 mx-auto text-slate-400 group-hover:text-blue-400 mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <span class="block text-sm font-medium text-slate-300">Tap to browse gallery</span>
+                                <span class="block text-xs text-slate-500 mt-1">PNG, JPG, HEIC</span>
+                            </div>
+                            <input type="file" id="imageUpload" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+
+                    <!-- AI Generation Section -->
+                    <div id="sectionAI" class="space-y-4 hidden">
+                        <div>
+                            <label for="aiPrompt" class="block text-sm font-medium text-slate-300 mb-1">Describe your album art</label>
+                            <textarea id="aiPrompt" rows="3" placeholder="e.g., A lone acoustic guitar leaning against an old oak tree at sunset, highly detailed, moody lighting..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"></textarea>
+                        </div>
+                        <button id="generateBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            <span id="generateText">Generate Artwork</span>
+                            <div id="generateLoader" class="loader w-5 h-5 hidden"></div>
+                        </button>
+                        <p class="text-xs text-slate-500 text-center">Uses AI to generate a unique, high-quality image.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Canvas Preview -->
+            <div class="lg:col-span-7 flex flex-col items-center justify-start space-y-6">
+                <div class="w-full bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-lg flex flex-col items-center">
+                    <h2 class="text-xl font-bold mb-6 w-full text-center md:text-left flex items-center gap-2">
+                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        Live Preview
+                    </h2>
+                    
+                    <div class="canvas-container relative">
+                        <canvas id="albumCanvas"></canvas>
+                    </div>
+
+                    <button id="downloadBtn" class="mt-8 w-full max-w-sm bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-emerald-900/50 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download Album Art
+                    </button>
+                    <p class="text-xs text-slate-500 mt-3">Saves as a high-resolution PNG file.</p>
+                </div>
+            </div>
+
+        </div>
     </div>
-  </section>
 
-  <div id="date-notice" class="notice" hidden></div>
+    <script>
+        // DOM Elements
+        const canvas = document.getElementById('albumCanvas');
+        const ctx = canvas.getContext('2d');
+        const bandNameInput = document.getElementById('bandName');
+        const songNameInput = document.getElementById('songName');
+        const imageUploadInput = document.getElementById('imageUpload');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        // Tabs
+        const tabUpload = document.getElementById('tabUpload');
+        const tabAI = document.getElementById('tabAI');
+        const sectionUpload = document.getElementById('sectionUpload');
+        const sectionAI = document.getElementById('sectionAI');
+        
+        // AI Generation
+        const aiPrompt = document.getElementById('aiPrompt');
+        const generateBtn = document.getElementById('generateBtn');
+        const generateText = document.getElementById('generateText');
+        const generateLoader = document.getElementById('generateLoader');
+        const toastContainer = document.getElementById('toastContainer');
 
-  <section class="card">
-    <div class="card-header">
-      <div class="card-title">🎯 MISSION PROGRESS</div>
-      <div class="day-pill">DAY <span id="ui-day">00</span> / 31</div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-group"><div class="stat-label">Burpees Done</div><div class="stat-value text-green" id="ui-done">0</div></div>
-      <div class="stat-group" style="text-align:right"><div class="stat-label">Burpees Left</div><div class="stat-value" id="ui-left">1,000</div></div>
-    </div>
-    <div class="progress-header"><span>Goal Completion</span><span id="ui-percent" class="text-red">0%</span></div>
-    <div class="progress-track"><div class="progress-fill" id="ui-progress"></div></div>
-  </section>
+        // State
+        const CANVAS_SIZE = 1500; // High resolution for actual export
+        canvas.width = CANVAS_SIZE;
+        canvas.height = CANVAS_SIZE;
+        let currentImage = null;
 
-  <section class="card">
-    <div class="pace-needed-flex">
-      <div class="card-title">DAILY PACE NEEDED</div>
-      <div><span class="pace-huge" id="ui-req-pace">32.3</span> <span style="font-size:13px;color:var(--text-muted)">reps/day</span></div>
-    </div>
-    <div class="pace-sub" id="ui-pace-desc">1,000 reps ÷ 31 days including today.</div>
-  </section>
+        // Custom Toast Notification (Replaces alerts)
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-red-500' : 'bg-slate-800';
+            const border = type === 'error' ? 'border-red-600' : 'border-slate-600';
+            
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-xl border ${border} flex items-center gap-2 transform transition-all duration-300 translate-y-[-20px] opacity-0`;
+            
+            const icon = type === 'error' 
+                ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+                : `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
 
-  <section class="card">
-    <div class="card-header"><div class="card-title"><span style="color:var(--red)">+</span> LOG A SET</div></div>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase">Reps in this set</div>
-    <div class="reps-input-group">
-      <button class="rep-btn" id="minus-btn" aria-label="Decrease reps">−</button>
-      <div class="rep-display" id="current-reps">22</div>
-      <button class="rep-btn" id="plus-btn" aria-label="Increase reps">+</button>
-    </div>
-    <div class="quick-reps">
-      <div class="quick-label">Quick:</div>
-      <button class="quick-chip" data-reps="10">10</button>
-      <button class="quick-chip active" data-reps="22">22</button>
-      <button class="quick-chip" data-reps="25">25</button>
-      <button class="quick-chip" data-reps="50">50</button>
-    </div>
-    <button class="log-btn" id="log-btn">🎅 LOG SET ↗</button>
-    <div class="log-count"><span id="ui-today-sets">0</span> sets logged today</div>
-  </section>
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+            });
 
-  <section class="card">
-    <div class="card-title" style="margin-bottom:15px">📈 YOUR CURRENT PACE</div>
-    <div class="pace-grid">
-      <div class="pace-col"><div class="stat-label">Daily Average</div><div class="pace-value text-green"><span id="ui-avg">0</span> <span class="pace-unit">reps/day</span></div></div>
-      <div class="pace-col"><div class="stat-label">Projected December</div><div class="pace-value text-red"><span id="ui-proj">0</span> <span class="pace-unit">reps</span></div></div>
-    </div>
-    <div class="pace-sub" style="margin-top:15px">Total ÷ elapsed challenge days. Projection assumes you maintain this daily average.</div>
-  </section>
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
 
-  <section class="card">
-    <div class="card-title">📅 DAILY ACTIVITY</div>
-    <div style="font-size:12px;color:var(--text-muted);margin-top:5px;text-transform:uppercase">Recent 7 Days</div>
-    <div class="week-grid" id="ui-week-grid"></div>
-  </section>
+        // Initialize with a placeholder image
+        const placeholderImg = new Image();
+        placeholderImg.crossOrigin = "Anonymous";
+        placeholderImg.onload = () => {
+            currentImage = placeholderImg;
+            drawCanvas();
+        };
+        // Generate a dark, textured placeholder
+        placeholderImg.src = 'https://placehold.co/1500x1500/1e293b/334155?text=Upload+or+Generate+Image';
 
-  <footer class="footer">
-    🎄 31 Days of Burpee-Mas | December 2026
-    <br><button class="small-btn" id="reset-btn">Reset all challenge data</button>
-    <div style="margin-top:8px">Your log is saved on this device and browser.</div>
-  </footer>
-</div>
 
-<script>
-(() => {
-  'use strict';
-  const TARGET = 1000;
-  const TOTAL_DAYS = 31;
-  const START = '2026-12-01';
-  const END = '2026-12-31';
-  const STORAGE_KEY = 'burpeemas_v3';
-  let currentReps = 22;
-  let logs = [];
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    logs = Array.isArray(saved) ? saved.filter(x => x && typeof x.count === 'number' && typeof x.dateString === 'string') : [];
-  } catch (_) { logs = []; }
+        // Tab Switching Logic
+        tabUpload.addEventListener('click', () => {
+            tabUpload.classList.add('text-blue-400', 'border-blue-500');
+            tabUpload.classList.remove('text-slate-400', 'border-transparent');
+            tabAI.classList.remove('text-blue-400', 'border-blue-500');
+            tabAI.classList.add('text-slate-400', 'border-transparent');
+            
+            sectionUpload.classList.remove('hidden');
+            sectionAI.classList.add('hidden');
+        });
 
-  const $ = id => document.getElementById(id);
-  const dateKey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const startDate = new Date(2026, 11, 1);
-  const endDate = new Date(2026, 11, 31, 23, 59, 59);
-  const today = new Date();
-  const todayStr = dateKey(today);
-  const inChallenge = todayStr >= START && todayStr <= END;
-  const beforeChallenge = todayStr < START;
-  const dayNumber = beforeChallenge ? 0 : (todayStr > END ? 31 : today.getDate());
-  const elapsedDays = Math.max(1, Math.min(TOTAL_DAYS, dayNumber || 1));
-  const daysRemaining = beforeChallenge ? 31 : Math.max(1, TOTAL_DAYS - dayNumber + 1);
+        tabAI.addEventListener('click', () => {
+            tabAI.classList.add('text-blue-400', 'border-blue-500');
+            tabAI.classList.remove('text-slate-400', 'border-transparent');
+            tabUpload.classList.remove('text-blue-400', 'border-blue-500');
+            tabUpload.classList.add('text-slate-400', 'border-transparent');
+            
+            sectionAI.classList.remove('hidden');
+            sectionUpload.classList.add('hidden');
+        });
 
-  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); }
-  function setReps(n) {
-    currentReps = Math.max(1, Math.min(500, n));
-    $('current-reps').textContent = currentReps;
-    document.querySelectorAll('.quick-chip').forEach(chip => chip.classList.toggle('active', Number(chip.dataset.reps) === currentReps));
-  }
-  function logSet() {
-    if (!inChallenge) return;
-    logs.push({timestamp:Date.now(), count:currentReps, dateString:todayStr});
-    save();
-    render();
-  }
-  function renderWeek() {
-    const grid = $('ui-week-grid');
-    grid.innerHTML = '';
-    const names = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    for (let i=6; i>=0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate()-i);
-      const key = dateKey(d);
-      const reps = logs.filter(x => x.dateString === key).reduce((s,x) => s+x.count, 0);
-      const col = document.createElement('div');
-      col.className = 'day-col' + (i===0 ? ' active' : '');
-      col.innerHTML = `<div class="day-name">${names[d.getDay()]}</div><div class="day-date">${String(d.getDate()).padStart(2,'0')}</div><div class="day-reps">${reps.toLocaleString()}</div>`;
-      grid.appendChild(col);
-    }
-  }
-  function render() {
-    const totalDone = logs.reduce((s,x) => s+x.count, 0);
-    const totalLeft = Math.max(0, TARGET-totalDone);
-    const percent = Math.min(100, totalDone/TARGET*100);
-    const todayLogs = logs.filter(x => x.dateString === todayStr);
-    const elapsedForAverage = beforeChallenge ? 1 : elapsedDays;
-    const avg = totalDone / elapsedForAverage;
-    $('ui-day').textContent = String(dayNumber).padStart(2,'0');
-    $('ui-done').textContent = totalDone.toLocaleString();
-    $('ui-left').textContent = totalLeft.toLocaleString();
-    $('ui-percent').textContent = Math.floor(percent)+'%';
-    $('ui-progress').style.width = percent+'%';
-    $('ui-req-pace').textContent = (totalLeft/daysRemaining).toFixed(1);
-    const base = Math.floor(totalLeft/daysRemaining);
-    const remainder = totalLeft % daysRemaining;
-    $('ui-pace-desc').textContent = `${totalLeft.toLocaleString()} reps ÷ ${daysRemaining} days remaining including today. Whole-rep split: ${base} on ${daysRemaining-remainder} days, ${base+1} on ${remainder} days.`;
-    $('ui-today-sets').textContent = todayLogs.length;
-    $('ui-avg').textContent = Math.round(avg).toLocaleString();
-    $('ui-proj').textContent = Math.round(avg*TOTAL_DAYS).toLocaleString();
+        // Drawing Logic
+        function drawCanvas() {
+            // Clear Canvas
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    const notice = $('date-notice');
-    if (beforeChallenge) {
-      notice.hidden = false;
-      notice.textContent = '🎅 The challenge starts December 1, 2026. You can open the app now, but logging is locked until December 1.';
-    } else if (!inChallenge) {
-      notice.hidden = false;
-      notice.textContent = '🎄 The December 2026 challenge has ended. Your results are still available; logging is closed.';
-    } else {
-      notice.hidden = true;
-    }
-    $('log-btn').disabled = !inChallenge;
-    $('minus-btn').disabled = !inChallenge;
-    $('plus-btn').disabled = !inChallenge;
-    document.querySelectorAll('.quick-chip').forEach(b => b.disabled = !inChallenge);
-    $('app-status').innerHTML = inChallenge ? 'CHALLENGE LIVE<br>DAY '+String(dayNumber).padStart(2,'0') : (beforeChallenge ? 'STARTS DEC 1<br>2026' : 'CHALLENGE COMPLETE');
-    renderWeek();
-  }
+            // 1. Draw Image Background (cover logic)
+            if (currentImage) {
+                const scale = Math.max(CANVAS_SIZE / currentImage.width, CANVAS_SIZE / currentImage.height);
+                const x = (CANVAS_SIZE / 2) - (currentImage.width / 2) * scale;
+                const y = (CANVAS_SIZE / 2) - (currentImage.height / 2) * scale;
+                ctx.drawImage(currentImage, x, y, currentImage.width * scale, currentImage.height * scale);
+            }
 
-  $('minus-btn').addEventListener('click', () => setReps(currentReps-1));
-  $('plus-btn').addEventListener('click', () => setReps(currentReps+1));
-  document.querySelectorAll('.quick-chip').forEach(b => b.addEventListener('click', () => setReps(Number(b.dataset.reps))));
-  $('log-btn').addEventListener('click', logSet);
-  $('reset-btn').addEventListener('click', () => {
-    if (confirm('Delete ALL Burpee-Mas logs on this device? This cannot be undone.')) {
-      logs = [];
-      save();
-      render();
-    }
-  });
-  render();
+            // 2. Add Gradient Overlay for Text Readability
+            // Darker at the top and bottom, transparent in middle
+            const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_SIZE);
+            gradient.addColorStop(0, 'rgba(0,0,0,0.6)');
+            gradient.addColorStop(0.3, 'rgba(0,0,0,0)');
+            gradient.addColorStop(0.6, 'rgba(0,0,0,0)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0.85)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(err => console.warn('Service worker registration failed:', err)));
-  }
-})();
-</script>
+            // 3. Draw Text
+            const bandText = bandNameInput.value.trim().toUpperCase();
+            const songText = songNameInput.value.trim();
+
+            ctx.textAlign = 'center';
+            
+            // Text Shadows for extra pop
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetX = 4;
+            ctx.shadowOffsetY = 4;
+
+            // Draw Band Name (Top)
+            if (bandText) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '900 100px "Montserrat", sans-serif';
+                // Handle long text scaling roughly
+                const maxTextWidth = CANVAS_SIZE - 100;
+                let fontSize = 100;
+                ctx.font = `900 ${fontSize}px "Montserrat", sans-serif`;
+                while(ctx.measureText(bandText).width > maxTextWidth && fontSize > 40) {
+                    fontSize -= 5;
+                    ctx.font = `900 ${fontSize}px "Montserrat", sans-serif`;
+                }
+                ctx.fillText(bandText, CANVAS_SIZE / 2, 180);
+            }
+
+            // Draw Song Name (Bottom)
+            if (songText) {
+                ctx.fillStyle = '#e2e8f0'; // slate-200
+                ctx.font = 'italic 700 80px "Montserrat", sans-serif';
+                // Handle long text scaling roughly
+                const maxTextWidth = CANVAS_SIZE - 150;
+                let fontSize = 80;
+                ctx.font = `italic 700 ${fontSize}px "Montserrat", sans-serif`;
+                while(ctx.measureText(songText).width > maxTextWidth && fontSize > 30) {
+                    fontSize -= 5;
+                    ctx.font = `italic 700 ${fontSize}px "Montserrat", sans-serif`;
+                }
+                ctx.fillText(songText, CANVAS_SIZE / 2, CANVAS_SIZE - 120);
+            }
+            
+            // Reset shadow
+            ctx.shadowColor = 'transparent';
+        }
+
+        // Event Listeners for real-time updates
+        bandNameInput.addEventListener('input', drawCanvas);
+        songNameInput.addEventListener('input', drawCanvas);
+
+        // File Upload Handling
+        imageUploadInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    currentImage = img;
+                    drawCanvas();
+                    showToast('Image loaded successfully');
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        // AI Generation Handling (Using Gemini API)
+        generateBtn.addEventListener('click', async () => {
+            const prompt = aiPrompt.value.trim();
+            if (!prompt) {
+                showToast('Please enter a description for the image', 'error');
+                return;
+            }
+
+            // UI Loading State
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            generateText.textContent = 'Generating...';
+            generateLoader.classList.remove('hidden');
+
+            try {
+                // Ensure API key is empty as per environment rules
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+                
+                // Add specific styling to the prompt to make it good for album art
+                const enhancedPrompt = `Album cover art, no text, ${prompt}, highly detailed, professional lighting, cinematic, square format`;
+
+                const payload = {
+                    contents: [{
+                        role: 'user',
+                        parts: [{ text: enhancedPrompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ['IMAGE'],
+                        imageConfig: { aspectRatio: "1:1" }
+                    },
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('API Request Failed');
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+                if (part && part.inlineData && part.inlineData.data) {
+                    const imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                    const img = new Image();
+                    img.onload = () => {
+                        currentImage = img;
+                        drawCanvas();
+                        showToast('AI Image generated successfully!');
+                    };
+                    img.src = imageUrl;
+                } else {
+                    throw new Error('No image data found in response');
+                }
+
+            } catch (error) {
+                console.error("Generation error:", error);
+                showToast('Failed to generate image. Please try again.', 'error');
+            } finally {
+                // Restore UI State
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                generateText.textContent = 'Generate Artwork';
+                generateLoader.classList.add('hidden');
+            }
+        });
+
+        // Download Handling
+        downloadBtn.addEventListener('click', () => {
+            try {
+                // Get data URL from canvas
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
+                
+                // Create temporary link and trigger download
+                const link = document.createElement('a');
+                // Format filename nicely
+                const safeBand = bandNameInput.value.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'band';
+                const safeSong = songNameInput.value.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'song';
+                
+                link.download = `${safeBand}_${safeSong}_cover.png`;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Album art downloaded!');
+            } catch (err) {
+                console.error(err);
+                showToast('Error downloading image', 'error');
+            }
+        });
+
+        // Initial Draw
+        document.fonts.ready.then(() => {
+            drawCanvas();
+        });
+
+    </script>
 </body>
 </html>
